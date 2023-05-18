@@ -1,10 +1,11 @@
 const asyncHandler = require("express-async-handler");
+const v4 = require('uuid').v4
 const Theatre = require("../models/theaterModel");
 //@desc Get all theatres
 //@route GET /api/theatres
 //@access private
 const getTheatres = asyncHandler(async (req, res) => {
-  const theatres = await Theatre.find({ theatre_id: req.user.id });
+  const theatres = await Theatre.find();
   res.status(200).json(theatres);
 });
 
@@ -12,20 +13,21 @@ const getTheatres = asyncHandler(async (req, res) => {
 //@route POST /api/theatres
 //@access private
 const createTheatre = asyncHandler(async (req, res) => {
-  console.log("The request body is :", req.body);
-  const { theatre_id,theatreName,metroLocation,district,numberOfShows,seatingCapacity } = req.body;
+  // console.log("The request body is :", req.body);
+  const { theatreName,metroLocation,district,numberOfShows,seatingCapacity, image } = req.body;
 
-  if ( !theatre_id||!theatreName||!metroLocation||!district||!numberOfShows||!seatingCapacity) {
+  if ( !theatreName||!metroLocation||!district||!numberOfShows||!seatingCapacity || !image) {
     res.status(400);
     throw new Error("All fields are mandatory !");
   }
   const theatre = await Theatre.create({
-    theatre_id:req.user.id,
+    theatre_id: v4(),
     theatreName,
     metroLocation,
     district,
     numberOfShows,
-    seatingCapacity
+    seatingCapacity,
+    image
   });
 
   res.status(201).json(theatre);
@@ -76,10 +78,10 @@ const deleteTheatre = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Theatre not found");
   }
-  if (theatre.theatre_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission to update Theatres Details");
-  }
+  // if (theatre.theatre_id.toString() !== req.user.id) {
+  //   res.status(403);
+  //   throw new Error("User don't have permission to update Theatres Details");
+  // }
   await Theatre.deleteOne({ _id: req.params.id });
   res.status(200).json(theatre);
 });
