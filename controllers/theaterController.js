@@ -55,10 +55,10 @@ const updateTheatre = asyncHandler(async (req, res) => {
     throw new Error("Theatre Not Found!!!");
   }
 
-  if (theatre.theatre_id.toString() !== req.theatre.id) {
-    res.status(403);
-    throw new Error("User don't have permission to update Theatre Details");
-  }
+  // if (theatre.theatre_id.toString() !== req.theatre.id) {
+  //   res.status(403);
+  //   throw new Error("User don't have permission to update Theatre Details");
+  // }
 
   const updatedTheatre = await Theatre.findByIdAndUpdate(
     req.params.id,

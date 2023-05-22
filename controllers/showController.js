@@ -1,10 +1,20 @@
 const asyncHandler = require("express-async-handler");
+const v4 = require('uuid').v4
+
 const Show = require("../models/showModel");
 //@desc Get all shows
 //@route GET /api/shows
 //@access private
 const getShows = asyncHandler(async (req, res) => {
-  const shows = await Show.find({ show_id: req.user.id });
+  const shows = await Show.find();
+  res.status(200).json(shows);
+});
+
+//@desc Get Show Count on perticular theater
+//@route GET /api/shows/count/:id
+//@access private
+const getShowCount = asyncHandler(async (req, res) => {
+  const shows = await Show.find({ theatre_id: req.params.id }).count();
   res.status(200).json(shows);
 });
 
@@ -13,13 +23,13 @@ const getShows = asyncHandler(async (req, res) => {
 //@access private
 const createShow = asyncHandler(async (req, res) => {
   console.log("The request body is :", req.body);
-  const { show_id,theatre_id,movie_id,time_slot,price_per_seat,regular_seat_available  } = req.body;
-  if (!show_id || !theatre_id || !movie_id||!time_slot || !price_per_seat || !regular_seat_available) {
+  const { theatre_id,movie_id,time_slot,price_per_seat,regular_seat_available  } = req.body;
+  if ( !theatre_id || !movie_id||!time_slot || !price_per_seat || !regular_seat_available) {
     res.status(400);
     throw new Error("All fields are mandatory !");
   }
   const show = await Show.create({
-    show_id:req.user.id,
+    show_id:v4(),
     theatre_id,
     movie_id,
     time_slot,
@@ -52,10 +62,10 @@ const updateShow = asyncHandler(async (req, res) => {
     throw new Error("Show not found");
   }
 
-  if (show.show_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission to update other Show Details");
-  }
+  // if (show.show_id.toString() !== req.user.id) {
+  //   res.status(403);
+  //   throw new Error("User don't have permission to update other Show Details");
+  // }
 
   const updatedShow = await Show.findByIdAndUpdate(
     req.params.id,
@@ -97,10 +107,10 @@ const deleteShow = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Show not found");
   }
-  if (show.show_id.toString() !== req.user.id) {
-    res.status(403);
-    throw new Error("User don't have permission to update other Show Details");
-  }
+  // if (show.show_id.toString() !== req.user.id) {
+  //   res.status(403);
+  //   throw new Error("User don't have permission to update other Show Details");
+  // }
   await Show.deleteOne({ _id: req.params.id });
   res.status(200).json(show);
 });
@@ -111,4 +121,5 @@ module.exports = {
   getShow,
   updateShow,
   deleteShow,
+  getShowCount
 };
