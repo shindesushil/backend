@@ -37,7 +37,7 @@ const createMovie = asyncHandler(async (req, res) => {
 //@access private
 const getMovie = asyncHandler(async (req, res) => {
   console.log('Movie ID: ', req.params.id);
-  const movie = await Movie.findOne({movie_id: req.params.id});
+  const movie = await Movie.findById(req.params.id);
   if (!movie) {
     res.status(404);
     throw new Error("Movie not found");

@@ -32,6 +32,9 @@ app.use("/api/shows",require("./routes/showRoutes"));
 //ROUTES FOR MOVIE
 app.use("/api/movies",require("./routes/movieRoutes"));
 
+// ROUTES FOR TICKET
+app.use("/api/ticket", require('./routes/ticketRoutes'))
+
 app.listen(port, () => {
   console.log(`Server running on port http://localhost:${port}`);
 });
